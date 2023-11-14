@@ -102,7 +102,7 @@ jobs:
         if: |
           steps.check-existing-image.outcome == 'failure' ||
           steps.check-base-image.outcome == 'failure'
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v5
         with:
           context: .
           push: true
