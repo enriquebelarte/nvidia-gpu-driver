@@ -71,7 +71,7 @@ jobs:
         if: |
           steps.check-existing-image.outcome == 'failure' ||
           steps.check-base-image.outcome == 'failure'
-        uses: hadolint/hadolint-action@v1.6.0
+        uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: ./Dockerfile
           failure-threshold: error
