@@ -1,0 +1,279 @@
+#! /bin/bash -x
+# Copyright (c) 2018-2020, NVIDIA CORPORATION. All rights reserved.
+
+set -eu
+
+RUN_DIR=/run/nvidia
+PID_FILE=${RUN_DIR}/${0##*/}.pid
+NUM_VGPU_DEVICES=0
+
+_assert_nvswitch_system() {
+    [ -d /proc/driver/nvidia-nvswitch ] || return 1
+    entries=$(ls -1 /proc/driver/nvidia-nvswitch/devices/*)
+    if [ -z "${entries}" ]; then
+        return 1
+    fi
+    return 0
+}
+
+# Load the kernel modules and start persistenced.
+_load_driver() {
+    if uname -r | grep aws > /dev/null && ! cat /proc/modules | grep i2c_core > /dev/null; then
+      echo "AWS kernel detected, loading the i2c_core kernel module"
+      modprobe -a i2c_core
+    fi
+
+    echo "Loading NVIDIA driver kernel modules..."
+    modprobe drm
+    modprobe -d /opt nvidia
+    modprobe -d /opt nvidia-uvm
+    modprobe -d /opt nvidia-modeset
+
+    echo "Starting NVIDIA persistence daemon..."
+    nvidia-persistenced --persistence-mode
+
+    if [ "${DRIVER_TYPE}" = "vgpu" ]; then
+        echo "Copying gridd.conf..."
+        cp /drivers/gridd.conf /etc/nvidia/gridd.conf
+        if [ "${VGPU_LICENSE_SERVER_TYPE}" = "NLS" ]; then
+            echo "Copying ClientConfigToken..."
+            mkdir -p  /etc/nvidia/ClientConfigToken/
+            cp /drivers/ClientConfigToken/* /etc/nvidia/ClientConfigToken/
+        fi
+
+        echo "Starting nvidia-gridd.."
+        LD_LIBRARY_PATH=/usr/lib64/nvidia/gridd nvidia-gridd
+
+        # Start virtual topology daemon
+        _start_vgpu_topology_daemon
+    fi
+
+    if _assert_nvswitch_system; then
+        echo "Starting NVIDIA fabric manager daemon..."
+        nv-fabricmanager -c /usr/share/nvidia/nvswitch/fabricmanager.cfg
+    fi
+}
+
+# Stop persistenced and unload the kernel modules if they are currently loaded.
+_unload_driver() {
+    local rmmod_args=()
+    local nvidia_deps=0
+    local nvidia_refs=0
+    local nvidia_uvm_refs=0
+    local nvidia_modeset_refs=0
+
+    echo "Stopping NVIDIA persistence daemon..."
+    if [ -f /var/run/nvidia-persistenced/nvidia-persistenced.pid ]; then
+        local pid=$(< /var/run/nvidia-persistenced/nvidia-persistenced.pid)
+
+        kill -SIGTERM "${pid}"
+        for i in $(seq 1 50); do
+            kill -0 "${pid}" 2> /dev/null || break
+            sleep 0.1
+        done
+        if [ $i -eq 50 ]; then
+            echo "Could not stop NVIDIA persistence daemon" >&2
+            return 1
+        fi
+    fi
+
+    if [ -f /var/run/nvidia-gridd/nvidia-gridd.pid ]; then
+        echo "Stopping NVIDIA grid daemon..."
+        local pid=$(< /var/run/nvidia-gridd/nvidia-gridd.pid)
+
+        kill -SIGTERM "${pid}"
+        for i in $(seq 1 10); do
+            kill -0 "${pid}" 2> /dev/null || break
+            sleep 0.1
+        done
+        if [ $i -eq 10 ]; then
+            echo "Could not stop NVIDIA Grid daemon" >&2
+            return 1
+        fi
+    fi
+
+    if [ -f /var/run/nvidia-fabricmanager/nv-fabricmanager.pid ]; then
+        echo "Stopping NVIDIA fabric manager daemon..."
+        local pid=$(< /var/run/nvidia-fabricmanager/nv-fabricmanager.pid)
+
+        kill -SIGTERM "${pid}"
+        for i in $(seq 1 50); do
+            kill -0 "${pid}" 2> /dev/null || break
+            sleep 0.1
+        done
+        if [ $i -eq 50 ]; then
+            echo "Could not stop NVIDIA fabric manager daemon" >&2
+            return 1
+        fi
+    fi
+
+    echo "Unloading NVIDIA driver kernel modules..."
+    if [ -f /sys/module/nvidia_modeset/refcnt ]; then
+        nvidia_modeset_refs=$(< /sys/module/nvidia_modeset/refcnt)
+        rmmod_args+=("nvidia-modeset")
+        ((++nvidia_deps))
+    fi
+    if [ -f /sys/module/nvidia_uvm/refcnt ]; then
+        nvidia_uvm_refs=$(< /sys/module/nvidia_uvm/refcnt)
+        rmmod_args+=("nvidia-uvm")
+        ((++nvidia_deps))
+    fi
+    if [ -f /sys/module/nvidia/refcnt ]; then
+        nvidia_refs=$(< /sys/module/nvidia/refcnt)
+        rmmod_args+=("nvidia")
+    fi
+    if [ ${nvidia_refs} -gt ${nvidia_deps} ] || [ ${nvidia_uvm_refs} -gt 0 ] || [ ${nvidia_modeset_refs} -gt 0 ]; then
+        echo "Could not unload NVIDIA driver kernel modules, driver is in use" >&2
+        return 1
+    fi
+
+    if [ ${#rmmod_args[@]} -gt 0 ]; then
+        rmmod ${rmmod_args[@]}
+    fi
+
+    return 0
+}
+
+# Mount the driver rootfs into the run directory with the exception of sysfs.
+_mount_rootfs() {
+    echo "Mounting NVIDIA driver rootfs..."
+    mount --make-runbindable /sys
+    mount --make-private /sys
+    mkdir -p ${RUN_DIR}/driver
+    mount --rbind / ${RUN_DIR}/driver
+
+    echo "Change device files security context for selinux compatibility"
+    chcon -R -t container_file_t ${RUN_DIR}/driver/dev
+}
+
+# Unmount the driver rootfs from the run directory.
+_unmount_rootfs() {
+    echo "Unmounting NVIDIA driver rootfs..."
+    if findmnt -r -o TARGET | grep "${RUN_DIR}/driver" > /dev/null; then
+        umount -l -R ${RUN_DIR}/driver
+    fi
+}
+
+_shutdown() {
+    if _unload_driver; then
+        _unmount_rootfs
+        rm -f ${PID_FILE}
+	rm -f ${RUN_DIR}/validations/driver-nvidia-ready
+        return 0
+    fi
+    return 1
+}
+
+_find_vgpu_driver_version() {
+    local count=""
+    local version=""
+    local drivers_path="/drivers"
+
+    if [ "${DISABLE_VGPU_VERSION_CHECK}" = "true" ]; then
+        echo "vgpu version compatibility check is disabled"
+        return 0
+    fi
+    # check if vgpu devices are present
+    count=$(vgpu-util count)
+    if [ $? -ne 0 ]; then
+         echo "cannot find vgpu devices on host, pleae check /var/log/vgpu-util.log for more details..."
+         return 0
+    fi
+    NUM_VGPU_DEVICES=$(echo "$count" | awk -F= '{print $2}')
+    if [ $NUM_VGPU_DEVICES -eq 0 ]; then
+        # no vgpu devices found, treat as passthrough
+        return 0
+    fi
+    echo "found $NUM_VGPU_DEVICES vgpu devices on host"
+
+    # find compatible guest driver using driver catalog
+    if [ -d "/mnt/shared-nvidia-driver-toolkit/drivers" ]; then
+        drivers_path="/mnt/shared-nvidia-driver-toolkit/drivers"
+    fi
+    version=$(vgpu-util match -i "${drivers_path}" -c "${drivers_path}/vgpuDriverCatalog.yaml")
+    if [ $? -ne 0 ]; then
+        echo "cannot find match for compatible vgpu driver from available list, please check /var/log/vgpu-util.log for more details..."
+        return 1
+    fi
+    DRIVER_VERSION=$(echo "$version" | awk -F= '{print $2}')
+    echo "vgpu driver version selected: ${DRIVER_VERSION}"
+    return 0
+}
+
+_start_vgpu_topology_daemon() {
+    type nvidia-topologyd > /dev/null 2>&1 || return 0
+    echo "Starting nvidia-topologyd.."
+    nvidia-topologyd
+}
+
+_prepare() {
+    if [ "${DRIVER_TYPE}" = "vgpu" ]; then
+        _find_vgpu_driver_version || exit 1
+    fi
+}
+
+_prepare_exclusive() {
+    _prepare
+
+    exec 3> ${PID_FILE}
+    if ! flock -n 3; then
+        echo "An instance of the NVIDIA driver is already running, aborting"
+        exit 1
+    fi
+    echo $$ >&3
+
+    trap "echo 'Caught signal'; exit 1" HUP INT QUIT PIPE TERM
+    trap "_shutdown" EXIT
+
+    _unload_driver || exit 1
+    _unmount_rootfs
+}
+
+_load() {
+    _load_driver
+    _mount_rootfs
+
+    touch ${RUN_DIR}/validations/driver-nvidia-ready
+    echo "Done, now waiting for signal"
+    sleep infinity &
+    trap "echo 'Caught signal'; _shutdown && { kill $!; exit 0; }" HUP INT QUIT PIPE TERM
+    trap - EXIT
+    while true; do wait $! || continue; done
+    exit 0
+}
+
+driver_start() {
+    _prepare_exclusive
+    _load
+}
+
+driver_stop() {
+    _shutdown
+}
+
+usage() {
+    cat >&2 <<EOF
+Usage: $0 COMMAND [ARG...]
+
+Commands:
+  start
+  stop
+EOF
+    exit 1
+}
+
+if [ $# -eq 0 ]; then
+    usage
+fi
+
+DRIVER_TYPE="${DRIVER_TYPE:-passthrough}"
+
+action=$1; shift
+case "${action}" in
+    start) options="" ;;
+    stop) options="" ;;
+    *) usage ;;
+esac
+command="driver_${action}"
+$command
+
