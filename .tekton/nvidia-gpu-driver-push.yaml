@@ -406,7 +406,7 @@ spec:
         command: ['ls']
         workingDir: $(workspace.envs.path)
     workspaces:
-    - name: envs
+    - name: workspace 
       workspace: workspace 
 
   taskRunTemplate: {}
