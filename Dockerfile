@@ -6,7 +6,7 @@ FROM registry.distributed-ci.io/dtk/driver-toolkit:${KERNEL_VERSION} as builder
 
 ARG ARCH='x86_64'
 ARG DRIVER_VERSION='510.47.03'
-ARG DRIVER_EPOCH=''
+ARG DRIVER_EPOCH='1'
 ARG KERNEL_VERSION='5.14.0-284.40.1.el9_2'
 ARG RHEL_VERSION=''
 
