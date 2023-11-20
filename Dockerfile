@@ -1,9 +1,8 @@
-ARG ARCH='x86_64'
+ARG ARCH=''
 ARG RHEL_VERSION=''
 ARG KERNEL_VERSION=''
 ARG BASE_DIGEST=''
-
-FROM ghcr.io/smgglrs/driver-toolkit:${KERNEL_VERSION}.${ARCH} as builder
+FROM registry.distributed-ci.io/dtk/driver-toolkit:${KERNEL_VERSION} as builder 
 
 ARG ARCH='x86_64'
 ARG DRIVER_VERSION=''
@@ -18,18 +17,18 @@ RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
         KREL=$(echo ${KERNEL_VERSION} | cut -d '-' -f 2 | sed 's/\.el._.$//') \
         KDIST=$(echo ${KERNEL_VERSION} | cut -d '-' -f 2 | sed 's/^.*\(\.el._.\)$/\1/') \
         DRIVER_STREAM=$(echo ${DRIVER_VERSION} | cut -d '.' -f 1) \
-    && curl -sLO https://us.download.nvidia.com/tesla/${DRIVER_VERSION}/NVIDIA-Linux-${ARCH}-${DRIVER_VERSION}.run \
+    && curl -LO https://us.download.nvidia.com/tesla/${DRIVER_VERSION}/NVIDIA-Linux-${ARCH}-${DRIVER_VERSION}.run \
     && git clone -b rhel8 https://github.com/NVIDIA/yum-packaging-precompiled-kmod \
     && cd yum-packaging-precompiled-kmod \
     && mkdir BUILD BUILDROOT RPMS SRPMS SOURCES SPECS \
     && mkdir nvidia-kmod-${DRIVER_VERSION}-${ARCH} \
-    && sh ${HOME}/NVIDIA-Linux-${ARCH}-${DRIVER_VERSION}.run --extract-only --target tmp \
+    && sh ../NVIDIA-Linux-${ARCH}-${DRIVER_VERSION}.run --extract-only --target tmp \
     && mv tmp/kernel nvidia-kmod-${DRIVER_VERSION}-${ARCH}/ \
     && tar -cJf SOURCES/nvidia-kmod-${DRIVER_VERSION}-${ARCH}.tar.xz nvidia-kmod-${DRIVER_VERSION}-${ARCH} \
     && mv kmod-nvidia.spec SPECS/ \
-    && sed -i -e 's/\$USER/builder/' -e 's/\$EMAIL/builder@smgglrs.io/' ${HOME}/x509-configuration.ini \
+    && sed -i -e 's/\$USER/builder/' -e 's/\$EMAIL/builder@smgglrs.io/' ../x509-configuration.ini \
     && openssl req -x509 -new -nodes -utf8 -sha256 -days 36500 -batch \
-      -config ${HOME}/x509-configuration.ini \
+      -config ../x509-configuration.ini \
       -outform DER -out SOURCES/public_key.der \
       -keyout SOURCES/private_key.priv \
     && rpmbuild \
@@ -44,7 +43,7 @@ RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
         -v -bb SPECS/kmod-nvidia.spec
 
 
-FROM registry.access.redhat.com/ubi8/ubi@${BASE_DIGEST}
+FROM registry.access.redhat.com/ubi8/ubi:8.8
 
 USER root
 
