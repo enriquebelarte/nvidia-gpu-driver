@@ -386,7 +386,7 @@ spec:
       - name: IMAGE_DIGEST
         value: $(tasks.build-container.results.IMAGE_DIGEST)
       runAfter:
-      - git-clone
+      - clone-repository 
       taskRef:
         params:
         - name: name
@@ -404,7 +404,7 @@ spec:
     steps:
       - name: list-envs
         command: ['ls']
-        workingDir: $(workspace.envs.path)
+        workingDir: $(workspace.workspace.path)
     workspaces:
     - name: workspace 
       workspace: workspace 
