@@ -58,10 +58,10 @@ ARG RHEL_VERSION=''
 ARG BASE_DIGEST=''
 
 COPY --from=builder /home/builder/yum-packaging-precompiled-kmod/RPMS/${ARCH}/*.rpm /rpms/
-COPY ./rhsm-register /usr/local/bin/rhsm-register
+#COPY ./rhsm-register /usr/local/bin/rhsm-register
 
-RUN --mount=type=secret,id=RHSM_ORG \
-    --mount=type=secret,id=RHSM_ACTIVATIONKEY \
+RUN #--mount=type=secret,id=RHSM_ORG \
+    #--mount=type=secret,id=RHSM_ACTIVATIONKEY \
     rm /etc/rhsm-host \
     && /usr/local/bin/rhsm-register \
     && subscription-manager repos \
