@@ -25,7 +25,7 @@ RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
     && mkdir nvidia-kmod-${DRIVER_VERSION}-${ARCH} \
     && mv ../open-gpu-kernel-modules/ nvidia-kmod-${DRIVER_VERSION}-${ARCH}/ \
     && tar -cJf SOURCES/nvidia-kmod-${DRIVER_VERSION}-${ARCH}.tar.xz nvidia-kmod-${DRIVER_VERSION}-${ARCH} \
-    && mv kmod-nvidia.spec SPECS/ \
+    && mv ../kmod-nvidia.spec SPECS/ \
     && rpmbuild \
         --define "%_topdir $(pwd)" \
         --define "debug_package %{nil}" \

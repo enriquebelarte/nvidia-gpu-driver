@@ -1,15 +1,15 @@
 %global commitId ${CI_UPSTREAM_COMMIT}
 
 # Named version, usually just the driver version, or "latest"
-%define _named_version 515.65.01
+%define _named_version 525.125.06 
 
 # Distribution name, like .el8 or .el8_1
 %define kmod_dist .el8
 
 # Fields that are specific to the version build
-%define kmod_driver_version	515.65.01
-%define kmod_kernel		4.18.0
-%define kmod_kernel_release	372.9.1
+%define kmod_driver_version	525.125.06
+%define kmod_kernel	        5.14.0	
+%define kmod_kernel_release	284.40.1
 %define epoch			1
 
 %define kmod_kernel_version	%{kmod_kernel}-%{kmod_kernel_release}%{kmod_dist}
@@ -19,8 +19,8 @@
 %define debug_package %{nil}
 %define sbindir %( if [ -d "/sbin" -a \! -h "/sbin" ]; then echo "/sbin"; else echo %{_sbindir}; fi )
 
-#Source0:	kmod-nvidia-%{kmod_driver_version}.tar.xz
-Source0:	${CI_ARCHIVE_KMOD_NVIDIA}
+Source0:	kmod-nvidia-%{kmod_driver_version}.tar.xz
+#Source0:	${CI_ARCHIVE_KMOD_NVIDIA}
 
 Name:		kmod-nvidia-%{kmod_driver_version}-%{kmod_kernel}-%{kmod_kernel_release}
 Version:	%{kmod_driver_version}
