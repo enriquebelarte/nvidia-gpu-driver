@@ -11,6 +11,7 @@
 %define kmod_kernel	        5.14.0	
 %define kmod_kernel_release	284.40.1
 %define epoch			1
+%define arch			x86_64
 
 %define kmod_kernel_version	%{kmod_kernel}-%{kmod_kernel_release}%{kmod_dist}
 %define kmod_module_path	/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/extra/drivers/video/nvidia
@@ -19,7 +20,7 @@
 %define debug_package %{nil}
 %define sbindir %( if [ -d "/sbin" -a \! -h "/sbin" ]; then echo "/sbin"; else echo %{_sbindir}; fi )
 
-Source0:	kmod-nvidia-%{kmod_driver_version}.tar.xz
+Source0:	kmod-nvidia-%{kmod_driver_version}-%{arch}.tar.xz
 #Source0:	${CI_ARCHIVE_KMOD_NVIDIA}
 
 Name:		kmod-nvidia-%{kmod_driver_version}-%{kmod_kernel}-%{kmod_kernel_release}
