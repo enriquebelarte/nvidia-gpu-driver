@@ -17,20 +17,14 @@ RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
         KREL=$(echo ${KERNEL_VERSION} | cut -d '-' -f 2 | sed 's/\.el._.$//') \
         KDIST=$(echo ${KERNEL_VERSION} | cut -d '-' -f 2 | sed 's/^.*\(\.el._.\)$/\1/') \
         DRIVER_STREAM=$(echo ${DRIVER_VERSION} | cut -d '.' -f 1) \
-    && curl -LO https://us.download.nvidia.com/tesla/${DRIVER_VERSION}/NVIDIA-Linux-${ARCH}-${DRIVER_VERSION}.run \
-    && git clone -b rhel9 https://github.com/NVIDIA/yum-packaging-precompiled-kmod \
+    && git clone -b ${DRIVER_VERSION}  https://github.com/NVIDIA/open-gpu-kernel-modules.git \
+    && mkdir yum-packaging-precompiled-kmod \ 
     && cd yum-packaging-precompiled-kmod \
     && mkdir BUILD BUILDROOT RPMS SRPMS SOURCES SPECS \
     && mkdir nvidia-kmod-${DRIVER_VERSION}-${ARCH} \
-    && sh ../NVIDIA-Linux-${ARCH}-${DRIVER_VERSION}.run --extract-only --target tmp \
-    && mv tmp/kernel nvidia-kmod-${DRIVER_VERSION}-${ARCH}/ \
+    && mv ../open-gpu-kernel-modules/ nvidia-kmod-${DRIVER_VERSION}-${ARCH}/ \
     && tar -cJf SOURCES/nvidia-kmod-${DRIVER_VERSION}-${ARCH}.tar.xz nvidia-kmod-${DRIVER_VERSION}-${ARCH} \
     && mv kmod-nvidia.spec SPECS/ \
-    && sed -i -e 's/\$USER/builder/' -e 's/\$EMAIL/builder@smgglrs.io/' ../x509-configuration.ini \
-    && openssl req -x509 -new -nodes -utf8 -sha256 -days 36500 -batch \
-      -config ../x509-configuration.ini \
-      -outform DER -out SOURCES/public_key.der \
-      -keyout SOURCES/private_key.priv \
     && rpmbuild \
         --define "%_topdir $(pwd)" \
         --define "debug_package %{nil}" \
@@ -43,12 +37,9 @@ RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
         -v -bb SPECS/kmod-nvidia.spec
 
 
-FROM registry.access.redhat.com/ubi9/ubi:9.2
-
+FROM registry.access.redhat.com/ubi8/ubi:8.2
 USER root
-
 ARG ARCH='x86_64'
-
 ARG DRIVER_TYPE='passthrough'
 ARG DRIVER_VERSION=''
 ARG DRIVER_EPOCH='1'
@@ -58,16 +49,8 @@ ARG RHEL_VERSION=''
 ARG BASE_DIGEST=''
 
 COPY --from=builder /home/builder/yum-packaging-precompiled-kmod/RPMS/${ARCH}/*.rpm /rpms/
-#COPY ./rhsm-register /usr/local/bin/rhsm-register
 
-RUN #--mount=type=secret,id=RHSM_ORG \
-    #--mount=type=secret,id=RHSM_ACTIVATIONKEY \
-#    rm /etc/rhsm-host \
-#    && /usr/local/bin/rhsm-register \
-#    && subscription-manager repos \
-#        --enable rhel-8-for-${ARCH}-baseos-rpms \
-#        --enable rhel-8-for-${ARCH}-appstream-rpms \
-    echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
+RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
     && dnf config-manager --best --nodocs --setopt=install_weak_deps=False --save \
     && dnf config-manager --add-repo=http://developer.download.nvidia.com/compute/cuda/repos/rhel8/${ARCH}/cuda-rhel8.repo \
     && rpm --import http://developer.download.nvidia.com/compute/cuda/repos/rhel8/${ARCH}/7fa2af80.pub \
@@ -105,7 +88,7 @@ USER 1001
 LABEL io.k8s.description="NVIDIA GPU Driver allows deploying matching driver / kernel versions on Kubernetes" \
       io.k8s.display-name="NVIDIA GPU Driver" \
       io.openshift.release.operator=true \
-      org.opencontainers.image.base.name="registry.access.redhat.com/ubi9/ubi:${RHEL_VERSION}" \
+      org.opencontainers.image.base.name="registry.access.redhat.com/ubi8/ubi:${RHEL_VERSION}" \
       org.opencontainers.image.base.digest="${BASE_DIGEST}" \
       org.opencontainers.image.source="https://github.com/smgglrs/nvidia-gpu-driver" \
       org.opencontainers.image.vendor="Smgglrs" \
