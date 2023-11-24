@@ -11,7 +11,6 @@ ARG KERNEL_VERSION='5.14.0-284.40.1.el9_2'
 ARG RHEL_VERSION='9.2'
 
 WORKDIR /home/builder
-COPY --chown=1001:0 x509-configuration.ini x509-configuration.ini
 COPY --chown=1001:0 kmod-nvidia.spec kmod-nvidia.spec
 
 RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
