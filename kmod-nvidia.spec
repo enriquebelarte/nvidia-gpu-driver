@@ -32,7 +32,6 @@ License:	Nvidia
 URL:		http://www.nvidia.com/
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 BuildRequires:	elfutils-libelf-devel
-BuildRequires:	hostname
 BuildRequires:	kernel-devel >= %kmod_kernel_version
 BuildRequires:	openssl
 BuildRequires:	redhat-rpm-config
