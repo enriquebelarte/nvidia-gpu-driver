@@ -88,7 +88,6 @@ done
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
-
 * Fri Oct 19 2022 Fabien Dupont <fdupont@redhat.com>
 - Trim the spec for Open GPU
 
