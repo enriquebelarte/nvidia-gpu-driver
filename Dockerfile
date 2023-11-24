@@ -21,9 +21,9 @@ RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
     && mkdir yum-packaging-precompiled-kmod \ 
     && cd yum-packaging-precompiled-kmod \
     && mkdir BUILD BUILDROOT RPMS SRPMS SOURCES SPECS \
-    && mkdir nvidia-kmod-${DRIVER_VERSION}-${ARCH} \
-    && mv ../open-gpu-kernel-modules/kernel-open/ nvidia-kmod-${DRIVER_VERSION}-${ARCH}/ \
-    && tar -cJf SOURCES/kmod-nvidia-${DRIVER_VERSION}-${ARCH}.tar.xz nvidia-kmod-${DRIVER_VERSION}-${ARCH} \
+    && mkdir kmod-nvidia-${DRIVER_VERSION}-${ARCH} \
+    && mv ../open-gpu-kernel-modules/kernel-open/ kmod-nvidia-${DRIVER_VERSION}-${ARCH}/ \
+    && tar -cJf SOURCES/kmod-nvidia-${DRIVER_VERSION}-${ARCH}.tar.xz kmod-nvidia-${DRIVER_VERSION}-${ARCH} \
     && mv ../kmod-nvidia.spec SPECS/ \
     && rpmbuild \
         --define "%_topdir $(pwd)" \
