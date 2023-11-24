@@ -89,7 +89,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Fri Oct 19 2022 Fabien Dupont <fdupont@redhat.com>
-- Trim the spec for Open GPU
+ - Trim the spec for Open GPU
 
 * Wed Jul 07 2021 Kevin Mittman <kmittman@nvidia.com>
  - Add two-pass HSM certificate signing flow
