@@ -14,13 +14,12 @@
 %define kmod_kernel_version	%{kmod_kernel}-%{kmod_kernel_release}%{kmod_dist}
 %define kmod_module_path	/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/extra/drivers/video/nvidia
 %define kmod_modules		nvidia nvidia-uvm nvidia-modeset nvidia-drm nvidia-peermem
-%define kmod_source_name	kmod-nvidia-%{kmod_driver_version}-%{_arch}
+%define kmod_source_name	kmod-nvidia-%{kmod_driver_version}-%{kmod_kernel}-%{kmod_kernel_release}
 
 %define debug_package %{nil}
 %define sbindir %( if [ -d "/sbin" -a \! -h "/sbin" ]; then echo "/sbin"; else echo %{_sbindir}; fi )
 
 Source0:	kmod-nvidia-%{kmod_driver_version}-%{arch}.tar.xz
-#Source0:	${CI_ARCHIVE_KMOD_NVIDIA}
 
 Name:		kmod-nvidia-%{kmod_driver_version}-%{kmod_kernel}-%{kmod_kernel_release}
 Version:	%{kmod_driver_version}
@@ -31,7 +30,6 @@ License:	Nvidia
 URL:		http://www.nvidia.com/
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 BuildRequires:	elfutils-libelf-devel
-#BuildRequires:	hostname
 BuildRequires:	kernel-devel >= %kmod_kernel_version
 BuildRequires:	openssl
 BuildRequires:	redhat-rpm-config
