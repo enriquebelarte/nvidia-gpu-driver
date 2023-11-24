@@ -51,7 +51,7 @@ Conflicts:	kmod-nvidia-latest-dkms
 The NVIDIA %{kmod_driver_version} display driver kernel module for kernel %{kmod_kernel_version}
 
 %prep
-%setup -q -n kmod-nvidia-%{kmod_driver_version}-%{_arch}
+%setup -q -n nvidia-kmod-%{kmod_driver_version}-%{_arch}
 
 %build
 # A proper kernel module build uses /lib/modules/KVER/{source,build} respectively,
