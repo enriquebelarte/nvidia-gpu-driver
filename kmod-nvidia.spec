@@ -18,9 +18,9 @@
 %define debug_package %{nil}
 %define sbindir %( if [ -d "/sbin" -a \! -h "/sbin" ]; then echo "/sbin"; else echo %{_sbindir}; fi )
 
-Source0:	kmod-nvidia-%{kmod_driver_version}-%{arch}.tar.xz
+Source0:	nvidia-kmod-%{kmod_driver_version}-%{arch}.tar.xz
 
-Name:		kmod-nvidia-%{kmod_driver_version}-%{kmod_kernel}-%{kmod_kernel_release}
+Name:		nvidia-kmod-%{kmod_driver_version}-%{kmod_kernel}-%{kmod_kernel_release}
 Version:	%{kmod_driver_version}
 Release:	1%{kmod_dist}
 Summary:	NVIDIA graphics driver
