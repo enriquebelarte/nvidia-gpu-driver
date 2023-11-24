@@ -55,7 +55,7 @@ The NVIDIA %{kmod_driver_version} display driver kernel module for kernel %{kmod
 
 %build
 pwd
-
+ls -l ../
 # A proper kernel module build uses /lib/modules/KVER/{source,build} respectively,
 # but that creates a dependency on the 'kernel' package since those directories are
 # not provided by kernel-devel. Both /source and /build in the mentioned directory
