@@ -24,7 +24,7 @@ RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
     && mkdir BUILD BUILDROOT RPMS SRPMS SOURCES SPECS \
     && mkdir nvidia-kmod-${DRIVER_VERSION}-${ARCH} \
     && mv ../open-gpu-kernel-modules/kernel-open/ nvidia-kmod-${DRIVER_VERSION}-${ARCH}/ \
-    && tar -cJf SOURCES/nvidia-kmod-${DRIVER_VERSION}-${ARCH}.tar.xz nvidia-kmod-${DRIVER_VERSION}-${ARCH} \
+    && tar -cJf SOURCES/kmod-nvidia-${DRIVER_VERSION}-${ARCH}.tar.xz nvidia-kmod-${DRIVER_VERSION}-${ARCH} \
     && mv ../kmod-nvidia.spec SPECS/ \
     && rpmbuild \
         --define "%_topdir $(pwd)" \
