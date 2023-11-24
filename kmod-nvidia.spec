@@ -1,5 +1,3 @@
-%global commitId ${CI_UPSTREAM_COMMIT}
-
 # Named version, usually just the driver version, or "latest"
 %define _named_version 525.125.06 
 
@@ -16,6 +14,7 @@
 %define kmod_kernel_version	%{kmod_kernel}-%{kmod_kernel_release}%{kmod_dist}
 %define kmod_module_path	/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/extra/drivers/video/nvidia
 %define kmod_modules		nvidia nvidia-uvm nvidia-modeset nvidia-drm nvidia-peermem
+%define kmod_source_name	kmod-nvidia-%{kmod_driver_version}-%{_arch}
 
 %define debug_package %{nil}
 %define sbindir %( if [ -d "/sbin" -a \! -h "/sbin" ]; then echo "/sbin"; else echo %{_sbindir}; fi )
@@ -52,7 +51,7 @@ Conflicts:	kmod-nvidia-latest-dkms
 The NVIDIA %{kmod_driver_version} display driver kernel module for kernel %{kmod_kernel_version}
 
 %prep
-%setup -q -n kmod-nvidia-%{commitId}
+%setup -q -n %{kmod_source_name}
 
 %build
 # A proper kernel module build uses /lib/modules/KVER/{source,build} respectively,
