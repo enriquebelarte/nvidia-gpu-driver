@@ -111,7 +111,7 @@ KERNEL_SOURCES=%{kmod_kernel_source}
 KERNEL_OUTPUT=%{kmod_kernel_source}
 #KERNEL_SOURCES=/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/source/
 #KERNEL_OUTPUT=/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/build
-
+#
 
 # These could affect the linking so we unset them both there and in %post
 unset LD_RUN_PATH
