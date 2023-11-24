@@ -23,7 +23,7 @@ RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
     && cd yum-packaging-precompiled-kmod \
     && mkdir BUILD BUILDROOT RPMS SRPMS SOURCES SPECS \
     && mkdir nvidia-kmod-${DRIVER_VERSION}-${ARCH} \
-    && mv ../open-gpu-kernel-modules/ nvidia-kmod-${DRIVER_VERSION}-${ARCH}/ \
+    && mv ../open-gpu-kernel-modules/kernel-open/ nvidia-kmod-${DRIVER_VERSION}-${ARCH}/ \
     && tar -cJf SOURCES/nvidia-kmod-${DRIVER_VERSION}-${ARCH}.tar.xz nvidia-kmod-${DRIVER_VERSION}-${ARCH} \
     && mv ../kmod-nvidia.spec SPECS/ \
     && rpmbuild \
@@ -91,13 +91,13 @@ LABEL io.k8s.description="NVIDIA GPU Driver allows deploying matching driver / k
       io.openshift.release.operator=true \
       org.opencontainers.image.base.name="registry.access.redhat.com/ubi8/ubi:${RHEL_VERSION}" \
       org.opencontainers.image.base.digest="${BASE_DIGEST}" \
-      org.opencontainers.image.source="https://github.com/smgglrs/nvidia-gpu-driver" \
-      org.opencontainers.image.vendor="Smgglrs" \
+      org.opencontainers.image.source="https://github.com/enriquebelarte/nvidia-gpu-driver" \
+      org.opencontainers.image.vendor="enriquebelarte" \
       org.opencontainers.image.title="NVIDIA GPU Driver" \
       org.opencontainers.image.description="NVIDIA GPU Driver allows deploying matching driver / kernel versions on Kubernetes" \
-      maintainer="Smgglrs" \
+      maintainer="enriquebelarte" \
       name="nvidia-gpu-driver" \
-      vendor="Smgglrs" \
+      vendor="enriquebelarte" \
       version="${DRIVER_VERSION}-${KERNEL_VERSION}.${ARCH}"
 
 COPY ./nvidia-driver /usr/local/bin/nvidia-driver
