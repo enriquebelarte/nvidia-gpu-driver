@@ -100,7 +100,7 @@ The NVidia %{kmod_driver_version} display driver kernel module for kernel %{kmod
 %setup -q -n %{kmod_source_name}
 
 %build
-cd kernel-open
+#cd kernel-open
 # A proper kernel module build uses /lib/modules/KVER/{source,build} respectively,
 # but that creates a dependency on the 'kernel' package since those directories are
 # not provided by kernel-devel. Both /source and /build in the mentioned directory
