@@ -64,7 +64,7 @@ KERNEL_OUTPUT=/usr/src/kernels/%{kmod_kernel_version}.%{_arch}
 #KERNEL_OUTPUT=/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/build
 
 # Compile kernel modules
-%{make_build} SYSSRC=${KERNEL_SOURCES} SYSOUT=${KERNEL_OUTPUT} modules
+cd kernel-open && %{make_build} SYSSRC=${KERNEL_SOURCES} SYSOUT=${KERNEL_OUTPUT} modules
 
 %post
 depmod -a %{kmod_kernel_version}.%{_arch}
