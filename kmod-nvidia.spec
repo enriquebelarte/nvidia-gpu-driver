@@ -1,13 +1,13 @@
 %global _build_id_links none
 # Named version, usually just the driver version, or "latest"
-%define _named_version 525.125.06
+%define _named_version 535.104.05
 
 # Distribution name, like .el8 or .el8_1
 %define kmod_dist .el9_2
 
 
 # Fields that are specific to the version build
-%define kmod_driver_version	525.125.06
+%define kmod_driver_version	535.104.05
 %define kmod_kernel		5.14.0
 %define kmod_kernel_release	284.40.1
 %define epoch			1
@@ -53,8 +53,6 @@ The NVIDIA %{kmod_driver_version} display driver kernel module for kernel %{kmod
 %setup -q -n nvidia-kmod-%{kmod_driver_version}-%{_arch}
 
 %build
-pwd
-ls -l 
 # A proper kernel module build uses /lib/modules/KVER/{source,build} respectively,
 # but that creates a dependency on the 'kernel' package since those directories are
 # not provided by kernel-devel. Both /source and /build in the mentioned directory
