@@ -3,7 +3,6 @@
 %define _named_version 525.125.06
 
 # Distribution name, like .el8 or .el8_1
-#%define kmod_dist %{?kernel_dist}%{?!kernel_dist:%{dist}}
 %define kmod_dist .el9_2
 
 
