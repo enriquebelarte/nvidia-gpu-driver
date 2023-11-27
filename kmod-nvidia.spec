@@ -64,6 +64,8 @@ KERNEL_OUTPUT=/usr/src/kernels/%{kmod_kernel_version}.%{_arch}
 #KERNEL_OUTPUT=/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/build
 
 # Compile kernel modules
+ls -l
+pwd
 %{make_build} SYSSRC=${KERNEL_SOURCES} SYSOUT=${KERNEL_OUTPUT} modules
 
 %post
