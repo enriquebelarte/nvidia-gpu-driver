@@ -1,15 +1,16 @@
 %global _build_id_links none
 # Named version, usually just the driver version, or "latest"
-%define _named_version 525.105.17 
+%define _named_version 525.125.06
 
 # Distribution name, like .el8 or .el8_1
-%define kmod_dist %{?kernel_dist}%{?!kernel_dist:%{dist}}
+#%define kmod_dist %{?kernel_dist}%{?!kernel_dist:%{dist}}
+%define kmod_dist .el9_2
 
 
 # Fields that are specific to the version build
-%define kmod_driver_version	525.105.17
-%define kmod_kernel		4.18.0
-%define kmod_kernel_release	477.13.1
+%define kmod_driver_version	525.125.06
+%define kmod_kernel		5.14.0
+%define kmod_kernel_release	284.40.1
 %define epoch			1
 
 %define kmod_kernel_version	%{kmod_kernel}-%{kmod_kernel_release}%{kmod_dist}
