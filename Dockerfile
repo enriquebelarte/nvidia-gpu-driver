@@ -1,17 +1,17 @@
 ARG ARCH='x86_64'
-ARG RHEL_VERSION='9.2'
-ARG KERNEL_VERSION='5.14.0-284.40.1.el9_2'
+ARG RHEL_VERSION='8.8'
+ARG KERNEL_VERSION='4.18.0-477.13.1.el8_8'
 ARG BASE_DIGEST=''
 FROM registry.distributed-ci.io/dtk/driver-toolkit:${KERNEL_VERSION} as builder 
 
 ARG ARCH='x86_64'
-ARG DRIVER_VERSION='535.43.16'
+ARG DRIVER_VERSION='525.105.17'
 ARG DRIVER_EPOCH='1'
-ARG KERNEL_VERSION='5.14.0-284.40.1.el9_2'
-ARG RHEL_VERSION='9.2'
+ARG KERNEL_VERSION='4.18.0-477.13.1.el8_8'
+ARG RHEL_VERSION='8.8'
 
 WORKDIR /home/builder
-COPY --chown=1001:0 kmod-nvidia.spec kmod-nvidia.spec
+COPY kmod-nvidia.spec kmod-nvidia.spec
 
 RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
         KREL=$(echo ${KERNEL_VERSION} | cut -d '-' -f 2 | sed 's/\.el._.$//') \
@@ -37,7 +37,7 @@ RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
         -v -bb SPECS/kmod-nvidia.spec
 
 
-FROM registry.access.redhat.com/ubi8/ubi:8.2
+FROM registry.access.redhat.com/ubi8/ubi:8.8
 USER root
 ARG ARCH='x86_64'
 ARG DRIVER_TYPE='passthrough'
