@@ -14,7 +14,7 @@
 
 %define kmod_kernel_version	%{kmod_kernel}-%{kmod_kernel_release}%{kmod_dist}
 %define kmod_module_path	/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/extra/drivers/video/nvidia
-%define kmod_modules		nvidia nvidia-uvm nvidia-drm nvidia-peermem
+%define kmod_modules		nvidia nvidia-uvm nvidia-modeset nvidia-drm nvidia-peermem
 
 %define debug_package %{nil}
 %define sbindir %( if [ -d "/sbin" -a \! -h "/sbin" ]; then echo "/sbin"; else echo %{_sbindir}; fi )
@@ -63,7 +63,7 @@ KERNEL_OUTPUT=/usr/src/kernels/%{kmod_kernel_version}.%{_arch}
 #KERNEL_SOURCES=/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/source/
 #KERNEL_OUTPUT=/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/build
 # Remove .cpp sources
-sed -i '/SRCS_CXX/d' src/nvidia-modeset/srcs.mk
+#sed -i '/SRCS_CXX/d' src/nvidia-modeset/srcs.mk
 # Compile kernel modules
 %{make_build} SYSSRC=${KERNEL_SOURCES} SYSOUT=${KERNEL_OUTPUT} modules
 
