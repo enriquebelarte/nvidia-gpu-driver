@@ -64,8 +64,6 @@ KERNEL_OUTPUT=/usr/src/kernels/%{kmod_kernel_version}.%{_arch}
 #KERNEL_OUTPUT=/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/build
 
 # Compile kernel modules
-ls -l nvidia/
-pwd
 %{make_build} -C kernel-open/ SYSSRC=${KERNEL_SOURCES} SYSOUT=${KERNEL_OUTPUT} modules
 
 %post
