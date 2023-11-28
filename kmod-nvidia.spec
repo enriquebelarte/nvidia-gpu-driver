@@ -14,7 +14,7 @@
 
 %define kmod_kernel_version	%{kmod_kernel}-%{kmod_kernel_release}%{kmod_dist}
 %define kmod_module_path	/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/extra/drivers/video/nvidia
-%define kmod_modules		nvidia nvidia-uvm nvidia-modeset nvidia-drm nvidia-peermem
+%define kmod_modules		nvidia nvidia-uvm nvidia-drm nvidia-peermem
 
 %define debug_package %{nil}
 %define sbindir %( if [ -d "/sbin" -a \! -h "/sbin" ]; then echo "/sbin"; else echo %{_sbindir}; fi )
