@@ -66,7 +66,7 @@ KERNEL_OUTPUT=/usr/src/kernels/%{kmod_kernel_version}.%{_arch}
 # Compile kernel modules
 ls -l nvidia/
 pwd
-%{make_build} SYSSRC=${KERNEL_SOURCES} SYSOUT=${KERNEL_OUTPUT} modules
+%{make_build} -C kernel-open/ SYSSRC=${KERNEL_SOURCES} SYSOUT=${KERNEL_OUTPUT} modules
 
 %post
 depmod -a %{kmod_kernel_version}.%{_arch}
