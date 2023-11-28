@@ -62,7 +62,8 @@ KERNEL_SOURCES=/usr/src/kernels/%{kmod_kernel_version}.%{_arch}
 KERNEL_OUTPUT=/usr/src/kernels/%{kmod_kernel_version}.%{_arch}
 #KERNEL_SOURCES=/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/source/
 #KERNEL_OUTPUT=/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/build
-
+# Remove .cpp sources
+sed -i '/SRCS_CXX/d' src/nvidia-modeset/srcs.mk
 # Compile kernel modules
 %{make_build} SYSSRC=${KERNEL_SOURCES} SYSOUT=${KERNEL_OUTPUT} modules
 
