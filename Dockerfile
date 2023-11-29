@@ -57,14 +57,14 @@ RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
     && rpm --import http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/D42D0685.pub \
     && VERSION_ARRAY=(${DRIVER_VERSION//./ }) \
     && if [ "$DRIVER_TYPE" != "vgpu" ] ; then \
-        if [[ ${VERSION_ARRAY[0]} -ge 470 ]] || ([[ ${VERSION_ARRAY[0]} == 460 ]] && [[ ${VERSION_ARRAY[1]} -ge 91 ]]) ; then \
+        if [[ ${VERSION_ARRAY[0]} -ge 470 ]] || ([[ ${VERSION_ARRAY[0]} == 460 && ${VERSION_ARRAY[1]} -ge 91 ]]) ; then \
             FABRIC_MANAGER_PKG=nvidia-fabric-manager-${DRIVER_VERSION}-1 ; \
         else \
-            FABRIC_MANAGER_PKG=nvidia-fabric-manager-${VERSION_ARRY[0]}-${DRIVER_VERSION}-1 ; \
+            FABRIC_MANAGER_PKG=nvidia-fabric-manager-${VERSION_ARRAY[0]}-${DRIVER_VERSION}-1 ; \
         fi ; \
         NSCQ_PKG=libnvidia-nscq-${VERSION_ARRAY[0]}-${DRIVER_VERSION}-1 ; \
     fi \
-    && dnf -y module enable nvidia-driver:${VERSION_ARRAY[0]}/fm \
+    && dnf -y module enable nvidia-driver:/${VERSION_ARRAY[0]}fm \
     && dnf -y install kmod \
     && mkdir -p /lib/modules/${KERNEL_VERSION}.${ARCH} \
     && touch /lib/modules/${KERNEL_VERSION}.${ARCH}/modules.order \
