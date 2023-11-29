@@ -38,7 +38,7 @@ RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
         -v -bb SPECS/kmod-nvidia.spec
 
 
-FROM registry.access.redhat.com/ubi8/ubi:8.8
+FROM registry.access.redhat.com/ubi9/ubi:9.2
 USER root
 ARG ARCH='x86_64'
 ARG DRIVER_TYPE='passthrough'
@@ -53,11 +53,11 @@ COPY --from=builder /home/builder/yum-packaging-precompiled-kmod/RPMS/${ARCH}/*.
 
 RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
     && dnf config-manager --best --nodocs --setopt=install_weak_deps=False --save \
-    && dnf config-manager --add-repo=http://developer.download.nvidia.com/compute/cuda/repos/rhel8/${ARCH}/cuda-rhel8.repo \
-    && rpm --import http://developer.download.nvidia.com/compute/cuda/repos/rhel8/${ARCH}/7fa2af80.pub \
+    && dnf config-manager --add-repo=http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/cuda-rhel9.repo \
+    && rpm --import http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/D42D0685.pub \
     && VERSION_ARRAY=(${DRIVER_VERSION//./ }) \
     && if [ "$DRIVER_TYPE" != "vgpu" ] ; then \
-        if [ ${VERSION_ARRAY[0]} -ge 470 ] || ([ ${VERSION_ARRAY[0]} == 460 ] && [ ${VERSION_ARRAY[1]} -ge 91 ]) ; then \
+        if [[ ${VERSION_ARRAY[0]} -ge 470 ]] || ([[ ${VERSION_ARRAY[0]} == 460 ]] && [[ ${VERSION_ARRAY[1]} -ge 91 ]]) ; then \
             FABRIC_MANAGER_PKG=nvidia-fabric-manager-${DRIVER_VERSION}-1 ; \
         else \
             FABRIC_MANAGER_PKG=nvidia-fabric-manager-${VERSION_ARRY[0]}-${DRIVER_VERSION}-1 ; \
