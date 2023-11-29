@@ -1,6 +1,6 @@
 ARG ARCH='x86_64'
 ARG RHEL_VERSION='9.2'
-ARG KERNEL_VERSION='5.14.0-284.431.el9_2'
+ARG KERNEL_VERSION='5.14.0-284.43.1.el9_2'
 ARG BASE_DIGEST=''
 #FROM registry.distributed-ci.io/dtk/driver-toolkit:${KERNEL_VERSION} as builder 
 FROM quay.io/ebelarte/driver-toolkit:5.14.0-284.40.1.el9_2 as builder
@@ -8,7 +8,7 @@ FROM quay.io/ebelarte/driver-toolkit:5.14.0-284.40.1.el9_2 as builder
 ARG ARCH='x86_64'
 ARG DRIVER_VERSION='535.104.05'
 ARG DRIVER_EPOCH='1'
-ARG KERNEL_VERSION='5.14.0-284.431.el9_2'
+ARG KERNEL_VERSION='5.14.0-284.43.1.el9_2'
 ARG RHEL_VERSION='9.2'
 
 WORKDIR /home/builder
