@@ -58,10 +58,10 @@ The NVIDIA %{kmod_driver_version} display driver kernel module for kernel %{kmod
 # not provided by kernel-devel. Both /source and /build in the mentioned directory
 # just link to the sources directory in /usr/src however, which ddiskit defines
 # as kmod_kernel_source.
-KERNEL_SOURCES=/usr/src/kernels/%{kmod_kernel_version}.%{_arch}
-KERNEL_OUTPUT=/usr/src/kernels/%{kmod_kernel_version}.%{_arch}
-#KERNEL_SOURCES=/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/source/
-#KERNEL_OUTPUT=/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/build
+#KERNEL_SOURCES=/usr/src/kernels/%{kmod_kernel_version}.%{_arch}
+#KERNEL_OUTPUT=/usr/src/kernels/%{kmod_kernel_version}.%{_arch}
+KERNEL_SOURCES=/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/source/
+KERNEL_OUTPUT=/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/build
 # Remove .cpp sources
 #sed -i '/SRCS_CXX/d' src/nvidia-modeset/srcs.mk
 # Compile kernel modules
