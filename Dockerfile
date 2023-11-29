@@ -46,7 +46,7 @@ ARG DRIVER_VERSION='535.104.05'
 ARG DRIVER_EPOCH='1'
 ARG CUDA_VERSION='535.104.05'
 ARG KERNEL_VERSION=''
-ARG RHEL_VERSION=''
+ARG RHEL_VERSION='9.2'
 ARG BASE_DIGEST=''
 
 COPY --from=builder /home/builder/yum-packaging-precompiled-kmod/RPMS/${ARCH}/*.rpm /rpms/
