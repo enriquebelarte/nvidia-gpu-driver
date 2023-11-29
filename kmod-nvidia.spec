@@ -5,11 +5,10 @@
 # Distribution name, like .el8 or .el8_1
 %define kmod_dist .el9_2
 
-
 # Fields that are specific to the version build
 %define kmod_driver_version	535.104.05
 %define kmod_kernel		5.14.0
-%define kmod_kernel_release	284.40.1
+%define kmod_kernel_release	284.431
 %define epoch			1
 
 %define kmod_kernel_version	%{kmod_kernel}-%{kmod_kernel_release}%{kmod_dist}
@@ -58,10 +57,10 @@ The NVIDIA %{kmod_driver_version} display driver kernel module for kernel %{kmod
 # not provided by kernel-devel. Both /source and /build in the mentioned directory
 # just link to the sources directory in /usr/src however, which ddiskit defines
 # as kmod_kernel_source.
-#KERNEL_SOURCES=/usr/src/kernels/%{kmod_kernel_version}.%{_arch}
-#KERNEL_OUTPUT=/usr/src/kernels/%{kmod_kernel_version}.%{_arch}
-KERNEL_SOURCES=/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/source/
-KERNEL_OUTPUT=/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/build
+KERNEL_SOURCES=/usr/src/kernels/%{kmod_kernel_version}.%{_arch}
+KERNEL_OUTPUT=/usr/src/kernels/%{kmod_kernel_version}.%{_arch}
+#KERNEL_SOURCES=/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/source/
+#KERNEL_OUTPUT=/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/build
 # Remove .cpp sources
 #sed -i '/SRCS_CXX/d' src/nvidia-modeset/srcs.mk
 # Compile kernel modules
