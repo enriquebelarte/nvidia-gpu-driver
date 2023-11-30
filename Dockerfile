@@ -54,6 +54,7 @@ COPY --from=builder /home/builder/yum-packaging-precompiled-kmod/RPMS/${ARCH}/*.
 
 RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
     && dnf config-manager --best --nodocs --setopt=install_weak_deps=False --save \
+    && dnf -y update && \
     && dnf config-manager --add-repo=http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/cuda-rhel9.repo \
     && rpm --import http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/D42D0685.pub \
     && VERSION_ARRAY=(${DRIVER_VERSION//./ }) \
