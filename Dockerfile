@@ -66,7 +66,7 @@ RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
         NSCQ_PKG=libnvidia-nscq-${VERSION_ARRAY[0]}-${DRIVER_VERSION}-1 ; \
     fi \
     && dnf -y module enable nvidia-driver:${VERSION_ARRAY[0]}-open \
-    && dnf -y install kmod kernel-abi-stablelists${KERNEL_VERSION:+-}${KERNEL_VERSION}\
+    && dnf -y install kmod kernel-abi-stablelists \
     && mkdir -p /lib/modules/${KERNEL_VERSION}.${ARCH} \
     && touch /lib/modules/${KERNEL_VERSION}.${ARCH}/modules.order \
     && touch /lib/modules/${KERNEL_VERSION}.${ARCH}/modules.builtin \
