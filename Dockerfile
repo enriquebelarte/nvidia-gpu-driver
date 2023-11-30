@@ -46,7 +46,7 @@ ARG DRIVER_VERSION='535.104.05'
 ARG DRIVER_EPOCH='1'
 ARG CUDA_VERSION='12-2'
 ARG CUDART_VERSION='12.2.140'
-ARG KERNEL_VERSION=''
+ARG KERNEL_VERSION='5.14.0-284.43.1.el9_2'
 ARG RHEL_VERSION='9.2'
 ARG BASE_DIGEST=''
 
@@ -66,7 +66,7 @@ RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
         NSCQ_PKG=libnvidia-nscq-${VERSION_ARRAY[0]}-${DRIVER_VERSION}-1 ; \
     fi \
     && dnf -y module enable nvidia-driver:${VERSION_ARRAY[0]}-open \
-    && dnf -y install kmod \
+    && dnf -y install kmod kernel-devel-${KERNEL_VERSION}\
     && mkdir -p /lib/modules/${KERNEL_VERSION}.${ARCH} \
     && touch /lib/modules/${KERNEL_VERSION}.${ARCH}/modules.order \
     && touch /lib/modules/${KERNEL_VERSION}.${ARCH}/modules.builtin \
