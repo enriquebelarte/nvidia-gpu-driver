@@ -44,7 +44,8 @@ ARG ARCH='x86_64'
 ARG DRIVER_TYPE='passthrough'
 ARG DRIVER_VERSION='535.104.05'
 ARG DRIVER_EPOCH='1'
-ARG CUDA_VERSION='535.104.05'
+ARG CUDA_VERSION='12-2'
+ARG CUDART_VERSION='12.2.140'
 ARG KERNEL_VERSION=''
 ARG RHEL_VERSION='9.2'
 ARG BASE_DIGEST=''
@@ -72,7 +73,7 @@ RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
     && dnf -y install \
         /rpms/kmod-nvidia-*.rpm \
         cuda-compat-${CUDA_VERSION}-${DRIVER_VERSION} \
-        cuda-cudart-${CUDA_VERSION} \
+        cuda-cudart-${CUDA_VERSION}-${CUDART_VERSION}-1 \
         nvidia-driver-cuda-${DRIVER_VERSION} \
 	nvidia-driver-libs-${DRIVER_VERSION} \
 	nvidia-driver-NVML-${DRIVER_VERSION} \
