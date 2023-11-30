@@ -53,8 +53,9 @@ ARG BASE_DIGEST=''
 COPY --from=builder /home/builder/yum-packaging-precompiled-kmod/RPMS/${ARCH}/*.rpm /rpms/
 
 RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
+    && dnf -y update \ 
     && dnf config-manager --best --nodocs --setopt=install_weak_deps=False --save \
-    && dnf -y update \
+    && dnf -y install kernel-abi-stablelists \
     && dnf config-manager --add-repo=http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/cuda-rhel9.repo \
     && rpm --import http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/D42D0685.pub \
     && VERSION_ARRAY=(${DRIVER_VERSION//./ }) \
@@ -67,7 +68,7 @@ RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
         NSCQ_PKG=libnvidia-nscq-${VERSION_ARRAY[0]}-${DRIVER_VERSION}-1 ; \
     fi \
     && dnf -y module enable nvidia-driver:${VERSION_ARRAY[0]}-open \
-    && dnf -y install kmod kernel-abi-stablelists \
+    && dnf -y install kmod \
     && mkdir -p /lib/modules/${KERNEL_VERSION}.${ARCH} \
     && touch /lib/modules/${KERNEL_VERSION}.${ARCH}/modules.order \
     && touch /lib/modules/${KERNEL_VERSION}.${ARCH}/modules.builtin \
