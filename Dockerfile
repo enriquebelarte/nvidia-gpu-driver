@@ -58,10 +58,8 @@ COPY ./rhsm-register /usr/local/bin/rhsm-register
 #    --mount=type=secret,id=rhsm-activationkey \
 #    rm /etc/rhsm-host \
 #    && /usr/local/bin/rhsm-register \
-RUN subscription-manager repos \
-      --enable rhel-9-for-${ARCH}-baseos-rpms \
-      --enable rhel-9-for-${ARCH}-appstream-rpms \
-    echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
+RUN dnf config-manager --enable rhel-9-for-x86_64-baseos-rpms \
+    && echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
     && dnf config-manager --best --nodocs --setopt=install_weak_deps=False --save \
     && dnf -y install kernel-abi-stablelists \
     && dnf config-manager --add-repo=http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/cuda-rhel9.repo \
