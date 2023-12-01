@@ -51,11 +51,18 @@ ARG RHEL_VERSION='9.2'
 ARG BASE_DIGEST=''
 
 COPY --from=builder /home/builder/yum-packaging-precompiled-kmod/RPMS/${ARCH}/*.rpm /rpms/
+COPY ./rhsm-register /usr/local/bin/rhsm-register
 
-RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
-    && dnf -y update \ 
+
+RUN --mount=type=secret,id=rhsm-org \
+    --mount=type=secret,id=rhsm-activationkey \
+    rm /etc/rhsm-host \
+    && /usr/local/bin/rhsm-register \
+    && subscription-manager repos \
+        --enable rhel-9-for-${ARCH}-baseos-rpms \
+        --enable rhel-9-for-${ARCH}-appstream-rpms \
+    echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
     && dnf config-manager --best --nodocs --setopt=install_weak_deps=False --save \
-    && subscription-manager repos --enable rhel-8-for-x86_64-baseos-rpms \
     && dnf -y install kernel-abi-stablelists \
     && dnf config-manager --add-repo=http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/cuda-rhel9.repo \
     && rpm --import http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/D42D0685.pub \

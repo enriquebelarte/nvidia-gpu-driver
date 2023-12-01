@@ -425,4 +425,10 @@ spec:
   - name: git-auth
     secret:
       secretName: '{{ git_auth_secret }}'
+  - name: rhsm-org
+    secret:
+      secretName: '{{ rhsm-org }}'
+  - name: rhsm-activationkey
+    secret:
+      secretName: '{{ rhsm-activationkey }}'
 status: {}
