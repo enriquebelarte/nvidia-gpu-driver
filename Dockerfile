@@ -54,13 +54,13 @@ COPY --from=builder /home/builder/yum-packaging-precompiled-kmod/RPMS/${ARCH}/*.
 COPY ./rhsm-register /usr/local/bin/rhsm-register
 
 
-RUN --mount=type=secret,id=rhsm-org \
-    --mount=type=secret,id=rhsm-activationkey \
-    rm /etc/rhsm-host \
-    && /usr/local/bin/rhsm-register \
-    && subscription-manager repos \
-        --enable rhel-9-for-${ARCH}-baseos-rpms \
-        --enable rhel-9-for-${ARCH}-appstream-rpms \
+# RUN --mount=type=secret,id=rhsm-org \
+#    --mount=type=secret,id=rhsm-activationkey \
+#    rm /etc/rhsm-host \
+#    && /usr/local/bin/rhsm-register \
+RUN subscription-manager repos \
+      --enable rhel-9-for-${ARCH}-baseos-rpms \
+      --enable rhel-9-for-${ARCH}-appstream-rpms \
     echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
     && dnf config-manager --best --nodocs --setopt=install_weak_deps=False --save \
     && dnf -y install kernel-abi-stablelists \
@@ -100,7 +100,7 @@ USER 1001
 LABEL io.k8s.description="NVIDIA GPU Driver allows deploying matching driver / kernel versions on Kubernetes" \
       io.k8s.display-name="NVIDIA GPU Driver" \
       io.openshift.release.operator=true \
-      org.opencontainers.image.base.name="registry.access.redhat.com/ubi8/ubi:${RHEL_VERSION}" \
+      org.opencontainers.image.base.name="registry.access.redhat.com/ubi9/ubi:${RHEL_VERSION}" \
       org.opencontainers.image.base.digest="${BASE_DIGEST}" \
       org.opencontainers.image.source="https://github.com/enriquebelarte/nvidia-gpu-driver" \
       org.opencontainers.image.vendor="enriquebelarte" \
