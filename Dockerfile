@@ -61,7 +61,7 @@ COPY ./rhsm-register /usr/local/bin/rhsm-register
 #    && /usr/local/bin/rhsm-register \
 #RUN dnf config-manager --enable rhel-9-for-x86_64-baseos-rpms \
 RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
-    && dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm \
+    && dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm \
     && dnf config-manager --best --nodocs --setopt=install_weak_deps=False --save \
     && dnf config-manager --add-repo=http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/cuda-rhel9.repo \
     && rpm --import http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/D42D0685.pub \
