@@ -61,6 +61,7 @@ COPY ./rhsm-register /usr/local/bin/rhsm-register
 #    && /usr/local/bin/rhsm-register \
 #RUN dnf config-manager --enable rhel-9-for-x86_64-baseos-rpms \
 RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
+    && dnf -y update \
     && dnf -y install kernel-core-${KERNEL_VERSION} \
     && dnf config-manager --best --nodocs --setopt=install_weak_deps=False --save \
     && dnf config-manager --add-repo=http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/cuda-rhel9.repo \
