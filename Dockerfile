@@ -37,10 +37,11 @@ RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
         --define "driver ${DRIVER_VERSION}" \
         --define "epoch ${DRIVER_EPOCH}" \
         --define "driver_branch ${DRIVER_STREAM}" \
-        -v -bb SPECS/kmod-nvidia.spec
+        -v -bb SPECS/kmod-nvidia.spec \
+    && cp RPMS/${ARCH}/*.rpm /rpms/
 
 # Remove multistage
-COPY /home/builder/yum-packaging-precompiled-kmod/RPMS/${ARCH}/*.rpm /rpms/
+# COPY /home/builder/yum-packaging-precompiled-kmod/RPMS/${ARCH}/*.rpm /rpms/
 RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
     && dnf config-manager --best --nodocs --setopt=install_weak_deps=False --save \
     && dnf config-manager --add-repo=http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/cuda-rhel9.repo \
