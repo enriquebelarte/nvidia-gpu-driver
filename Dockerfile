@@ -39,7 +39,7 @@ RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
 
 
 #FROM registry.access.redhat.com/ubi9/ubi:9.2
-FROM fedora:34 
+FROM quay.io/ebelarte/ubi9:kernel-abi
 USER root
 ARG ARCH='x86_64'
 ARG DRIVER_TYPE='passthrough'
@@ -52,9 +52,16 @@ ARG RHEL_VERSION='9.2'
 ARG BASE_DIGEST=''
 
 COPY --from=builder /home/builder/yum-packaging-precompiled-kmod/RPMS/${ARCH}/*.rpm /rpms/
+COPY ./rhsm-register /usr/local/bin/rhsm-register
 
 
-RUN dnf config-manager --best --nodocs --setopt=install_weak_deps=False --save \
+# RUN --mount=type=secret,id=rhsm-org \
+#    --mount=type=secret,id=rhsm-activationkey \
+#    rm /etc/rhsm-host \
+#    && /usr/local/bin/rhsm-register \
+#RUN dnf config-manager --enable rhel-9-for-x86_64-baseos-rpms \
+RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
+    && dnf config-manager --best --nodocs --setopt=install_weak_deps=False --save \
     && dnf config-manager --add-repo=http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/cuda-rhel9.repo \
     && rpm --import http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/D42D0685.pub \
     && VERSION_ARRAY=(${DRIVER_VERSION//./ }) \
@@ -67,7 +74,6 @@ RUN dnf config-manager --best --nodocs --setopt=install_weak_deps=False --save \
         NSCQ_PKG=libnvidia-nscq-${VERSION_ARRAY[0]}-${DRIVER_VERSION}-1 ; \
     fi \
     && dnf -y module enable nvidia-driver:${VERSION_ARRAY[0]}-open/fm \
-    && dnf -y install kmod \
     && mkdir -p /lib/modules/${KERNEL_VERSION}.${ARCH} \
     && touch /lib/modules/${KERNEL_VERSION}.${ARCH}/modules.order \
     && touch /lib/modules/${KERNEL_VERSION}.${ARCH}/modules.builtin \
