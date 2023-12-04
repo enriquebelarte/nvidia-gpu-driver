@@ -56,7 +56,6 @@ RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
         NSCQ_PKG=libnvidia-nscq-${VERSION_ARRAY[0]}-${DRIVER_VERSION}-1 ; \
     fi \
     && dnf -y module enable nvidia-driver:${VERSION_ARRAY[0]}-open/fm \
-    && dnf -y install kmod \
     && mkdir -p /lib/modules/${KERNEL_VERSION}.${ARCH} \
     && touch /lib/modules/${KERNEL_VERSION}.${ARCH}/modules.order \
     && touch /lib/modules/${KERNEL_VERSION}.${ARCH}/modules.builtin \
