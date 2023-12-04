@@ -38,7 +38,7 @@ RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
         --define "epoch ${DRIVER_EPOCH}" \
         --define "driver_branch ${DRIVER_STREAM}" \
         -v -bb SPECS/kmod-nvidia.spec \
-    && cp RPMS/${ARCH}/*.rpm /rpms/
+    && mkdir /rpms/ && cp RPMS/${ARCH}/*.rpm /rpms/
 
 # Remove multistage
 # COPY /home/builder/yum-packaging-precompiled-kmod/RPMS/${ARCH}/*.rpm /rpms/
