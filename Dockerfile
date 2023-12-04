@@ -10,7 +10,7 @@ ARG DRIVER_VERSION='535.104.05'
 ARG DRIVER_EPOCH='1'
 ARG KERNEL_VERSION='5.14.0-284.30.1.el9_2'
 ARG RHEL_VERSION='9.2'
-
+USER root
 WORKDIR /home/builder
 COPY kmod-nvidia.spec kmod-nvidia.spec
 
@@ -39,7 +39,7 @@ RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
 
 
 #FROM registry.access.redhat.com/ubi9/ubi:9.2
-FROM quay.io/ebelarte/ubi9:kernel-abi
+FROM quay.io/ebelarte/ubi9:5.14.0-284.30.1.el9_2 
 USER root
 ARG ARCH='x86_64'
 ARG DRIVER_TYPE='passthrough'
@@ -61,8 +61,6 @@ COPY ./rhsm-register /usr/local/bin/rhsm-register
 #    && /usr/local/bin/rhsm-register \
 #RUN dnf config-manager --enable rhel-9-for-x86_64-baseos-rpms \
 RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
-    && dnf -y update \
-    && dnf -y install kernel-core-${KERNEL_VERSION} \
     && dnf config-manager --best --nodocs --setopt=install_weak_deps=False --save \
     && dnf config-manager --add-repo=http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/cuda-rhel9.repo \
     && rpm --import http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/D42D0685.pub \
