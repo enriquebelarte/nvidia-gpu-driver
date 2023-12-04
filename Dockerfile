@@ -52,14 +52,8 @@ ARG RHEL_VERSION='9.2'
 ARG BASE_DIGEST=''
 
 COPY --from=builder /home/builder/yum-packaging-precompiled-kmod/RPMS/${ARCH}/*.rpm /rpms/
-COPY ./rhsm-register /usr/local/bin/rhsm-register
 
 
-# RUN --mount=type=secret,id=rhsm-org \
-#    --mount=type=secret,id=rhsm-activationkey \
-#    rm /etc/rhsm-host \
-#    && /usr/local/bin/rhsm-register \
-#RUN dnf config-manager --enable rhel-9-for-x86_64-baseos-rpms \
 RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
     #&& subscription-manager repos --enable codeready-builder-for-rhel-9-${ARCH}-rpms \
     #&& dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm \
@@ -90,8 +84,7 @@ RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
         ${NSCQ_PKG} \
      && mkdir -p /opt/lib/modules \
      && mv /lib/modules/${KERNEL_VERSION}.${ARCH} /opt/lib/modules \
-     && dnf clean all \
-     && rm -rf /rpms
+     && dnf clean all 
 
 USER 1001
 
