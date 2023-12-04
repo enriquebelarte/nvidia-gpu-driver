@@ -1,14 +1,14 @@
 ARG ARCH='x86_64'
 ARG RHEL_VERSION='9.2'
-ARG KERNEL_VERSION='5.14.0-284.43.1.el9_2'
+ARG KERNEL_VERSION='5.14.0-284.30.1'
 ARG BASE_DIGEST=''
 #FROM registry.distributed-ci.io/dtk/driver-toolkit:${KERNEL_VERSION} as builder 
-FROM quay.io/ebelarte/driver-toolkit:5.14.0-284.40.1.el9_2 as builder
+FROM quay.io/ebelarte/driver-toolkit:5.14.0-284.30.1.el9_2 as builder
 
 ARG ARCH='x86_64'
 ARG DRIVER_VERSION='535.104.05'
 ARG DRIVER_EPOCH='1'
-ARG KERNEL_VERSION='5.14.0-284.43.1.el9_2'
+ARG KERNEL_VERSION='5.14.0-284.30.1.el9_2'
 ARG RHEL_VERSION='9.2'
 
 WORKDIR /home/builder
@@ -47,7 +47,7 @@ ARG DRIVER_VERSION='535.104.05'
 ARG DRIVER_EPOCH='1'
 ARG CUDA_VERSION='12-2'
 ARG CUDART_VERSION='12.2.140'
-ARG KERNEL_VERSION='5.14.0-284.43.1.el9_2'
+ARG KERNEL_VERSION='5.14.0-284.30.1.el9_2'
 ARG RHEL_VERSION='9.2'
 ARG BASE_DIGEST=''
 
@@ -61,6 +61,7 @@ COPY ./rhsm-register /usr/local/bin/rhsm-register
 #    && /usr/local/bin/rhsm-register \
 #RUN dnf config-manager --enable rhel-9-for-x86_64-baseos-rpms \
 RUN echo "${RHEL_VERSION}" > /etc/dnf/vars/releasever \
+    && dnf -y install kernel-core-${KERNEL_VERSION} \
     && dnf config-manager --best --nodocs --setopt=install_weak_deps=False --save \
     && dnf config-manager --add-repo=http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/cuda-rhel9.repo \
     && rpm --import http://developer.download.nvidia.com/compute/cuda/repos/rhel9/${ARCH}/D42D0685.pub \

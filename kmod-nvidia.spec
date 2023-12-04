@@ -8,7 +8,7 @@
 # Fields that are specific to the version build
 %define kmod_driver_version	535.104.05
 %define kmod_kernel		5.14.0
-%define kmod_kernel_release	284.43.1
+%define kmod_kernel_release	284.30.1
 %define epoch			1
 
 %define kmod_kernel_version	%{kmod_kernel}-%{kmod_kernel_release}%{kmod_dist}
