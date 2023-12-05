@@ -2,7 +2,6 @@ ARG ARCH='x86_64'
 ARG RHEL_VERSION='9.2'
 ARG KERNEL_VERSION='5.14.0-284.30.1'
 ARG BASE_DIGEST=''
-#FROM registry.distributed-ci.io/dtk/driver-toolkit:${KERNEL_VERSION} as builder 
 FROM quay.io/ebelarte/driver-toolkit:5.14.0-284.30.1.el9_2 as builder
 
 ARG ARCH='x86_64'
@@ -12,7 +11,6 @@ ARG KERNEL_VERSION='5.14.0-284.30.1.el9_2'
 ARG RHEL_VERSION='9.2'
 ARG KERNEL_SOURCES='/usr/src/kernels/${KERNEL_VERSION}.${ARCH}'
 ARG KERNEL_OUTPUT='/usr/src/kernels/${KERNEL_VERSION}.${ARCH}'
-#KERNEL_SOURCES=/lib/modules/%{kmod_kernel_version}.%{_target_cpu}/source/
 WORKDIR /home/builder
 
 RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
