@@ -7,7 +7,7 @@ openssl req -x509 -new -nodes -utf8 -sha256 -days 36500 -batch \
       -keyout $PATH_KEY/private/private_key.priv
 modules=("nvidia-drm","nvidia","nvidia-modeset","nvidia-peermem","nvidia-uvm")
 for MODULE in ${modules[@]}; do
-/usr/src/kernels/$(uname -r)/scripts/sign-file \
+/usr/src/kernels/${KSOURCES}/scripts/sign-file \
           sha256 \
 	  $PATH_KEY/private/private_key.priv \
           $PATH_KEY/public_key.der \
