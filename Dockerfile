@@ -11,15 +11,20 @@ ARG KERNEL_VERSION='5.14.0-284.30.1.el9_2'
 ARG RHEL_VERSION='9.2'
 ARG KERNEL_SOURCES='/usr/src/kernels/${KERNEL_VERSION}.${ARCH}'
 ARG KERNEL_OUTPUT='/usr/src/kernels/${KERNEL_VERSION}.${ARCH}'
+
 WORKDIR /home/builder
+COPY signer.sh signer.sh
+COPY --chown=1001:0 x509-configuration.ini x509-configuration.ini
 
 RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
         KREL=$(echo ${KERNEL_VERSION} | cut -d '-' -f 2 | sed 's/\.el._.$//') \
         KDIST=$(echo ${KERNEL_VERSION} | cut -d '-' -f 2 | sed 's/^.*\(\.el._.\)$/\1/') \
         DRIVER_STREAM=$(echo ${DRIVER_VERSION} | cut -d '.' -f 1) \
+    && sed -i -e 's/\$USER/builder/' -e 's/\$EMAIL/builder@smgglrs.io/' ${HOME}/x509-configuration.ini \
     && git clone -b ${DRIVER_VERSION}  https://github.com/NVIDIA/open-gpu-kernel-modules.git \
     && cd open-gpu-kernel-modules \
-    && make SYSSRC=${KERNEL_SOURCES} SYSOUT=${KERNEL_OUTPUT} modules
+    && make SYSSRC=${KERNEL_SOURCES} SYSOUT=${KERNEL_OUTPUT} modules \
+    && sh signer.sh
 
 
 #FROM registry.access.redhat.com/ubi9/ubi:9.2
