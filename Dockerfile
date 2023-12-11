@@ -24,7 +24,7 @@ RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
     && git clone -b ${DRIVER_VERSION}  https://github.com/NVIDIA/open-gpu-kernel-modules.git \
     && cd open-gpu-kernel-modules \
     && make SYSSRC=${KERNEL_SOURCES} SYSOUT=${KERNEL_OUTPUT} modules \
-    && sh signer.sh
+    && cd .. && sh signer.sh
 
 
 #FROM registry.access.redhat.com/ubi9/ubi:9.2
