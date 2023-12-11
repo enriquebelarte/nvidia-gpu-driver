@@ -20,7 +20,7 @@ RUN export KVER=$(echo ${KERNEL_VERSION} | cut -d '-' -f 1) \
         KREL=$(echo ${KERNEL_VERSION} | cut -d '-' -f 2 | sed 's/\.el._.$//') \
         KDIST=$(echo ${KERNEL_VERSION} | cut -d '-' -f 2 | sed 's/^.*\(\.el._.\)$/\1/') \
         DRIVER_STREAM=$(echo ${DRIVER_VERSION} | cut -d '.' -f 1) \
-        KSOURCES=$(echo ${KERNEL_VERSION}.${ARCH} \
+        KSOURCES=$(echo ${KERNEL_VERSION}.${ARCH}) \
     && sed -i -e 's/\$USER/builder/' -e 's/\$EMAIL/builder@smgglrs.io/' x509-configuration.ini \
     && git clone -b ${DRIVER_VERSION}  https://github.com/NVIDIA/open-gpu-kernel-modules.git \
     && cd open-gpu-kernel-modules \
